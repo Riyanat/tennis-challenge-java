@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TennisGameTest {
 
-    TennisGame subjectUnderTest = new TennisGame("player1", "player2");
-
     static Stream<Arguments> input() {
         return Stream.of(
                 Arguments.of(0, 0, "Love-All"),
@@ -58,13 +56,8 @@ class TennisGameTest {
     @DisplayName("checkAllScoresTennisGame")
     @ParameterizedTest(name = "Player One Score: {0}, Player Two Score: {1} = Outcome: {2}")
     @MethodSource("input")
-    public void checkAllScoresTennisGame() {
-        String expectedOutcome = "Love-All";
-        createScore(8, 0);
-        assertEquals(expectedOutcome, subjectUnderTest.getScore());
-    }
-
-    private void createScore(int player1Score, int player2Score) {
+    public void checkAllScoresTennisGame(int player1Score, int player2Score, String expectedOutcome) {
+        TennisGame subjectUnderTest = new TennisGame("player1", "player2");
         int highestScore = Math.max(player1Score, player2Score);
 
         for (int i = 0; i < highestScore; i++) {
@@ -73,5 +66,7 @@ class TennisGameTest {
             if (i < player2Score)
                 subjectUnderTest.wonPoint("player2");
         }
+        assertEquals(expectedOutcome, subjectUnderTest.getScore());
     }
+
 }

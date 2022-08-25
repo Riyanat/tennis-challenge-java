@@ -22,7 +22,7 @@ public class TennisGame {
     }
 
     public String getScore() {
-        TennisResult result = new TennisGame(
+        TennisResult result = new Deuce(
                 this, new GameServer(
                         this, new GameReceiver(
                                 this, new AdvantageServer(
