@@ -1,9 +1,11 @@
 package io.turntabl.apps.tennisgame;
 
+import io.turntabl.apps.tennisgame.*;
+
 public class TennisGame {
 
-    int serverScore;
-    int receiverScore;
+    int serverScore = 0;
+    int receiverScore = 0;
     String server;
     String receiver;
 
@@ -18,13 +20,15 @@ public class TennisGame {
         else
             this.receiverScore += 1;
     }
+
     public String getScore() {
         TennisResult result = new Deuce(
                 this, new GameServer(
-                this, new GameReceiver(
-                this, new AdvantageServer(
-                this, new AdvantageReceiver(
-                this, new DefaultResult(this)))))).getResult();
+                        this, new GameReceiver(
+                                this, new AdvantageServer(
+                                        this, new AdvantageReceiver(
+                                                this, new DefaultResult(this))))))
+                .getResult();
         return result.format();
     }
 
@@ -46,127 +50,5 @@ public class TennisGame {
 
     boolean isDeuce() {
         return serverScore >= 3 && receiverScore >= 3 && (serverScore == receiverScore);
-    }
-}
-
-class TennisResult {
-    String serverScore;
-    String receiverScore;
-
-    TennisResult(String serverScore, String receiverScore) {
-        this.serverScore = serverScore;
-        this.receiverScore = receiverScore;
-    }
-
-    String format() {
-        if ("".equals(this.receiverScore))
-            return this.serverScore;
-        if (serverScore.equals(receiverScore))
-            return serverScore + "-All";
-        return this.serverScore + "-" + this.receiverScore;
-    }
-}
-
-interface ResultProvider {
-    TennisResult getResult();
-}
-
-class Deuce implements ResultProvider {
-    private final TennisGame game;
-    private final ResultProvider nextResult;
-
-    public Deuce(TennisGame game, ResultProvider nextResult) {
-        this.game = game;
-        this.nextResult = nextResult;
-    }
-
-    public TennisResult getResult() {
-        if (game.isDeuce())
-            return new TennisResult("Deuce", "");
-        return this.nextResult.getResult();
-    }
-}
-
-class GameServer implements ResultProvider {
-    private final TennisGame game;
-    private final ResultProvider nextResult;
-
-    public GameServer(TennisGame game, ResultProvider nextResult) {
-        this.game = game;
-        this.nextResult = nextResult;
-    }
-
-    @Override
-    public TennisResult getResult() {
-        if (game.serverHasWon())
-            return new TennisResult("Win for " + game.server, "");
-        return this.nextResult.getResult();
-    }
-}
-
-class GameReceiver implements ResultProvider {
-    private final TennisGame game;
-    private final ResultProvider nextResult;
-
-    public GameReceiver(TennisGame game, ResultProvider nextResult) {
-        this.game = game;
-        this.nextResult = nextResult;
-    }
-
-    public TennisResult getResult() {
-        if (game.receiverHasWon())
-            return new TennisResult("Win for " + game.receiver, "");
-        return this.nextResult.getResult();
-    }
-}
-
-class AdvantageServer implements ResultProvider {
-    private final TennisGame game;
-    private final ResultProvider nextResult;
-
-    public AdvantageServer(TennisGame game, ResultProvider nextResult) {
-        this.game = game;
-        this.nextResult = nextResult;
-    }
-
-    @Override
-    public TennisResult getResult() {
-        if (game.serverHasAdvantage())
-            return new TennisResult("Advantage " + game.server, "");
-        return this.nextResult.getResult();
-    }
-}
-
-class AdvantageReceiver implements ResultProvider {
-
-    private final TennisGame game;
-    private final ResultProvider nextResult;
-
-    public AdvantageReceiver(TennisGame game, ResultProvider nextResult) {
-        this.game = game;
-        this.nextResult = nextResult;
-    }
-
-    @Override
-    public TennisResult getResult() {
-        if (game.receiverHasAdvantage())
-            return new TennisResult("Advantage " + game.receiver, "");
-        return this.nextResult.getResult();
-    }
-}
-
-class DefaultResult implements ResultProvider {
-
-    private static final String[] scores = {"Love", "Fifteen", "Thirty", "Forty"};
-
-    private final TennisGame game;
-
-    public DefaultResult(TennisGame game) {
-        this.game = game;
-    }
-
-    @Override
-    public TennisResult getResult() {
-        return new TennisResult(scores[game.serverScore], scores[game.receiverScore]);
     }
 }
